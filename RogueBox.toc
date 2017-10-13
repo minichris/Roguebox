@@ -1,7 +1,8 @@
-## Interface: 70100
+## Interface: 70300
+## X-Min-Interface: 70000
 ## Title: RogueBox
 ## Author: Zaperox
-## Version: 0.13
+## Version: 0.13b
 ## Notes: Bones you rolled, on your personal resource display!
 
 pistol.lua
