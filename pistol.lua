@@ -2,7 +2,7 @@ local PistolShotGUIImp
 local PistolShotGUIImpag
 
 function CreatePistolGUI()
-    local PistolShotGUI = CreateFrame("Frame", "PistolShotGUI", UIParent)
+    local PistolShotGUI = CreateFrame("Frame", "PistolShotGUI", UIParent, BackdropTemplateMixin and "BackdropTemplate")
     PistolShotGUI:SetWidth(420)
     PistolShotGUI:SetHeight(420)
     PistolShotGUI:SetPoint("CENTER", UIParent)

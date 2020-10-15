@@ -6,10 +6,10 @@ local function isOutlaw()
 	return (class == "ROGUE" and GetSpecialization() == 2)
 end
 
-local BuffGUI = CreateFrame("Frame", "BuffGUI", UIParent)
+local BuffGUI = CreateFrame("Frame", "BuffGUI", UIParent, BackdropTemplateMixin and "BackdropTemplate")
 BuffGUI:SetWidth(175)
 BuffGUI:SetHeight(25)
-BuffGUI:SetPoint("TOPLEFT",0,0, PlayerNameplateParent)
+--BuffGUI:SetPoint("TOPLEFT",0,0, PlayerNameplateParent)
 BuffGUI:Hide()
 BuffGUI:SetBackdrop({
 	bgFile = "Interface\\dialogframe\\ui-dialogbox-background-dark",
@@ -32,8 +32,7 @@ CrimsonVial_Create()
 hooksecurefunc("CompactUnitFrame_OnUpdate", function(frame)
     if C_NamePlate.GetNamePlateForUnit("player") ~= nil then
         if C_NamePlate.GetNamePlateForUnit(frame.unit) == C_NamePlate.GetNamePlateForUnit("player") then
-            local point, relativeTo, relativePoint, xOfs, yOfs = C_NamePlate.GetNamePlateForUnit("player").UnitFrame:GetPoint(n)
-            BuffGUI:SetPoint(point, relativeTo, relativePoint, xOfs - 8, yOfs - 55)
+            BuffGUI:SetPoint("TOP", C_NamePlate.GetNamePlateForUnit("player").UnitFrame, nil, 0, 100)
         end
     end
     if(InCombatLockdown() and isOutlaw()) then
@@ -50,7 +49,7 @@ BuffGUIBackground:SetTexture("Interface\\AddOns\\RogueBox\\BarOff.tga")
 BuffGUIBackground:SetPoint("CENTER", 0, 10, BuffGUI)
 
 function BuffGUI_Create_Buff(x, IconNum)
-    local BuffGUI_Buff = CreateFrame("Frame", nil, BuffGUI)
+    local BuffGUI_Buff = CreateFrame("Frame", nil, BuffGUI, BackdropTemplateMixin and "BackdropTemplate")
     BuffGUI_Buff:SetWidth(30)
     BuffGUI_Buff:SetHeight(30)
     BuffGUI_Buff:SetPoint("CENTER", x, 0, "BuffGUI")
@@ -155,41 +154,41 @@ local BuffGUI_BuriedTreasure = BuffGUI_Create_Buff(45,"05")
 local BuffGUI_Broadsides = BuffGUI_Create_Buff(75,"07")
 
 function LightUpBuffs()
-    if(UnitBuff("player", "Jolly Roger") ~= nil) then
-        BuffGUI_JollyRoger:SetBackdropColor(1,1,1,1)
-    else
-        BuffGUI_JollyRoger:SetBackdropColor(0.2,0.2,0.2,1)
-    end
-    
-    if(UnitBuff("player", "Grand Melee") ~= nil) then
-        BuffGUI_GrandMelee:SetBackdropColor(1,1,1,1)
-    else
-        BuffGUI_GrandMelee:SetBackdropColor(0.2,0.2,0.2,1)
-    end
-    
-    if(UnitBuff("player", "Shark Infested Waters") ~= nil) then
-        BuffGUI_SharkInfestedWaters:SetBackdropColor(1,1,1,1)
-    else
-        BuffGUI_SharkInfestedWaters:SetBackdropColor(0.2,0.2,0.2,1)
-    end
-    
-    if(UnitBuff("player", "True Bearing") ~= nil) then
-        BuffGUI_TrueBearing:SetBackdropColor(1,1,1,1)
-    else
-        BuffGUI_TrueBearing:SetBackdropColor(0.2,0.2,0.2,1)
-    end
-    
-    if(UnitBuff("player", "Buried Treasure") ~= nil) then
-        BuffGUI_BuriedTreasure:SetBackdropColor(1,1,1,1)
-    else
-        BuffGUI_BuriedTreasure:SetBackdropColor(0.2,0.2,0.2,1)
-    end
-    
-    if(UnitBuff("player", "Broadsides") ~= nil) then
-        BuffGUI_Broadsides:SetBackdropColor(1,1,1,1)
-    else
-        BuffGUI_Broadsides:SetBackdropColor(0.2,0.2,0.2,1)
-    end
+	BuffGUI_Broadsides:SetBackdropColor(0.2,0.2,0.2,1)
+	BuffGUI_JollyRoger:SetBackdropColor(0.2,0.2,0.2,1)
+	BuffGUI_GrandMelee:SetBackdropColor(0.2,0.2,0.2,1)
+	BuffGUI_SharkInfestedWaters:SetBackdropColor(0.2,0.2,0.2,1)
+	BuffGUI_TrueBearing:SetBackdropColor(0.2,0.2,0.2,1)
+	BuffGUI_BuriedTreasure:SetBackdropColor(0.2,0.2,0.2,1)
+
+	local expirationTime, spellID, _
+	for i = 1, 40 do
+		-- "HELPFUL|PLAYER" is the filter for player's self-buffs
+		-- we want our aura list to be as short as possible
+		_, _, _, _, _, expirationTime, _, _, _, spellID = UnitAura("player", i, "HELPFUL|PLAYER")
+		if not spellID then
+			-- nothing, gtfo
+			break
+		elseif spellID == 193356 then --Broadside
+			BuffGUI_Broadsides:SetBackdropColor(1,1,1,1)
+			break
+		elseif spellID == 199600 then --Buried Treasure
+			BuffGUI_BuriedTreasure:SetBackdropColor(1,1,1,1)
+			break
+		elseif spellID == 193358 then --Grand Melee
+			BuffGUI_GrandMelee:SetBackdropColor(1,1,1,1)
+			break
+		elseif spellID == 193357 then --Ruthless Precision
+			BuffGUI_SharkInfestedWaters:SetBackdropColor(1,1,1,1)
+			break
+		elseif spellID == 199603 then --Skull and Crossbones
+			BuffGUI_JollyRoger:SetBackdropColor(1,1,1,1)
+			break
+		elseif spellID == 193359 then --True Bearing
+			BuffGUI_TrueBearing:SetBackdropColor(1,1,1,1)
+			break
+		end
+	end
 end
 
 function TickConst()
